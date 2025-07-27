@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        #container {
+            width: 60%;
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid #aaa;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+        }
+        
+        #question {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .option {
+            display: block;
+        }
+        
+        #btns {
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 8px 15px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <div id="question">Loading question...</div>
+        <form id="options-form">
+
+        </form>
+        <div id="btns">
+            <button type="button" id="submit">Submit</button>
+            <button type="button" id="next">Next</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const data = [{
+            "question": "What is the name of the first book of the Bible?",
+            "options": {
+                "A": "Exodus",
+                "B": "Genesis",
+                "C": "Leviticus",
+                "D": "Numbers"
+            },
+            "answer": "B"
+        }, {
+            "question": "Which planet is known as the \"Red Planet\"?",
+            "options": {
+                "A": "Venus",
+                "B": "Mars",
+                "C": "Jupiter",
+                "D": "Saturn"
+            },
+            "answer": "B"
+        }, {
+            "question": "What is the chemical symbol for gold?",
+            "options": {
+                "A": "Ag",
+                "B": "Au",
+                "C": "Fe",
+                "D": "Hg"
+            },
+            "answer": "B"
+        }, {
+            "question": "Who painted the Mona Lisa?",
+            "options": {
+                "A": "Vincent van Gogh",
+                "B": "Pablo Picasso",
+                "C": "Leonardo da Vinci",
+                "D": "Michelangelo"
+            },
+            "answer": "C"
+        }, {
+            "question": "What is the capital of Australia?",
+            "options": {
+                "A": "Sydney",
+                "B": "Melbourne",
+                "C": "Canberra",
+                "D": "Perth"
+            },
+            "answer": "C"
+        }, {
+            "question": "What is the speed of light in a vacuum?",
+            "options": {
+                "A": "150,000 km/s",
+                "B": "299,792,458 m/s",
+                "C": "300,000 km/s",
+                "D": "1,000,000 km/s"
+            },
+            "answer": "B"
+        }, {
+            "question": "What is the name of the largest ocean on Earth?",
+            "options": {
+                "A": "Atlantic Ocean",
+                "B": "Indian Ocean",
+                "C": "Arctic Ocean",
+                "D": "Pacific Ocean"
+            },
+            "answer": "D"
+        }, {
+            "question": "Who wrote the play \"Hamlet\"?",
+            "options": {
+                "A": "William Shakespeare",
+                "B": "Charles Dickens",
+                "C": "Jane Austen",
+                "D": "Geoffrey Chaucer"
+            },
+            "answer": "A"
+        }, {
+            "question": "What is the smallest country in the world?",
+            "options": {
+                "A": "Monaco",
+                "B": "Vatican City",
+                "C": "Nauru",
+                "D": "San Marino"
+            },
+            "answer": "B"
+        }, {
+            "question": "What is the chemical symbol for water?",
+            "options": {
+                "A": "H2O",
+                "B": "CO2",
+                "C": "NaCl",
+                "D": "O2"
+            },
+            "answer": "A"
+        }];
+
+        let currentIndex = 0;
+        let count = 0
+        const questionDiv = document.getElementById('question');
+        const optionsForm = document.getElementById('options-form');
+        const resultDiv = document.getElementById('result');
+        const submitBtn = document.getElementById('submit');
+        const nextBtn = document.getElementById('next');
+
+        function loadQuestion(index) {
+            const q = data[index];
+            questionDiv.textContent = `Q${index + 1}: ${q.question}`;
+            optionsForm.innerHTML = '';
+            for (let key in q.options) {
+                const label = document.createElement('label');
+                label.classList.add('option');
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'option';
+                input.value = key;
+
+                label.appendChild(input);
+                label.append(` ${q.options[key]}`);
+                optionsForm.appendChild(label);
+            }
+            resultDiv.textContent = '';
+        }
+
+        submitBtn.onclick = () => {
+            const selected = document.querySelector('input[name="option"]:checked');
+            if (!selected) {
+                resultDiv.textContent = "Please select an option!";
+                resultDiv.style.color = "red";
+                return;
+            }
+
+            const selectedAnswer = selected.value;
+            const correctAnswer = data[currentIndex].answer;
+
+            if (selectedAnswer === correctAnswer) {
+                resultDiv.textContent = "Correct!";
+                resultDiv.style.color = "green";
+                count++;
+
+
+            } else {
+                resultDiv.textContent = `Incorrect! Correct answer is: ${correctAnswer}`;
+                resultDiv.style.color = "red";
+            }
+
+        };
+
+        nextBtn.onclick = () => {
+            const selected = document.querySelector('input[name="option"]:checked');
+            if (!selected) {
+                resultDiv.textContent = "Please select an option!";
+                resultDiv.style.color = "red";
+                return;
+            }
+
+            currentIndex++;
+            if (currentIndex < data.length) {
+                loadQuestion(currentIndex);
+            } else {
+                questionDiv.textContent = "Quiz Completed!";
+                optionsForm.innerHTML = '';
+                submitBtn.disabled = true;
+                nextBtn.disabled = true;
+                resultDiv.textContent = '';
+                resultDiv.innerHTML = `<span style="color:blue">Your Score: ${count} / ${data.length}</span>`;
+            }
+        };
+
+
+        loadQuestion(currentIndex);
+    </script>
+
+</body>
+
+</html>
