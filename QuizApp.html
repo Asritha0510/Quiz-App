@@ -15,6 +15,12 @@
             font-family: Arial, sans-serif;
         }
         
+        #timer {
+            font-size: 18px;
+            color: red;
+            text-align: right;
+        }
+        
         #question {
             font-size: 20px;
             margin-bottom: 15px;
@@ -44,10 +50,9 @@
 <body>
 
     <div id="container">
+        <div id="timer">Time Left: 10:00</div>
         <div id="question">Loading question...</div>
-        <form id="options-form">
-
-        </form>
+        <form id="options-form"></form>
         <div id="btns">
             <button type="button" id="submit">Submit</button>
             <button type="button" id="next">Next</button>
@@ -149,12 +154,13 @@
         }];
 
         let currentIndex = 0;
-        let count = 0
+        let score = 0;
         const questionDiv = document.getElementById('question');
         const optionsForm = document.getElementById('options-form');
         const resultDiv = document.getElementById('result');
         const submitBtn = document.getElementById('submit');
         const nextBtn = document.getElementById('next');
+        const timerDiv = document.getElementById('timer');
 
         function loadQuestion(index) {
             const q = data[index];
@@ -190,14 +196,11 @@
             if (selectedAnswer === correctAnswer) {
                 resultDiv.textContent = "Correct!";
                 resultDiv.style.color = "green";
-                count++;
-
-
+                score++;
             } else {
                 resultDiv.textContent = `Incorrect! Correct answer is: ${correctAnswer}`;
                 resultDiv.style.color = "red";
             }
-
         };
 
         nextBtn.onclick = () => {
@@ -212,17 +215,36 @@
             if (currentIndex < data.length) {
                 loadQuestion(currentIndex);
             } else {
-                questionDiv.textContent = "Quiz Completed!";
-                optionsForm.innerHTML = '';
-                submitBtn.disabled = true;
-                nextBtn.disabled = true;
-                resultDiv.textContent = '';
-                resultDiv.innerHTML = `<span style="color:blue">Your Score: ${count} / ${data.length}</span>`;
+                finishQuiz();
             }
         };
 
+        function finishQuiz() {
+            questionDiv.textContent = "Quiz Completed!";
+            optionsForm.innerHTML = '';
+            submitBtn.disabled = true;
+            nextBtn.disabled = true;
+            resultDiv.innerHTML = `<span style="color:blue">Your Score: ${score} / ${data.length}</span>`;
+        }
+
+        function startTimer(duration) {
+            let timer = duration,
+                minutes, seconds;
+            const interval = setInterval(() => {
+                minutes = Math.floor(timer / 60);
+                seconds = timer % 60;
+
+                timerDiv.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
 
         loadQuestion(currentIndex);
+        startTimer(10 * 60);
     </script>
 
 </body>
